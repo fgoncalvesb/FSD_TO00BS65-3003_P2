@@ -3,7 +3,7 @@ var express = require("express");
 var app = express();
 var mongoose = require("mongoose");
 
-// this is needed to read forms
+// This is needed to read the api calls
 var bodyParser = require("body-parser");
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true}));
@@ -11,74 +11,79 @@ app.use(bodyParser.urlencoded({ extended: true}));
 // Mongo DB connection address
 var uri = "mongodb+srv://kundogb:cgNEW0EEnvbPRGP5@cluster0.dfuhg0v.mongodb.net/?retryWrites=true&w=majority";
 
-// Make schema to your data model
-const Movie = mongoose.model(
-"Movie",
+// The schema to my data model
+const Invoice = mongoose.model(
+"Invoice",
 {
-    title: {
+    invoicenumber: {
         type: String,
         required: true,
         },
-    year: {
+    emissiondate: {
         type: Date,
-        min: "1900-01-01",
-        max: "2024-01-01",
+        min: "2020-01-01",
+        max: "2023-12-31",
         required: true
         },
-    poster: {
-        type: String,
+    amount: {
+        type: Number,
         required: true,
         },
 },
-"movies"
+"invoices"
 );
 
-// print out 20 movies
+// print out invoices
 app.get("/api/getall", function(req, res) 
 {
 
-getMovies().catch(err => res.status(500).send(err));
+// This is for catching and showing any posible errors in the async functions
+getInvoices().catch(err => res.status(500).send(err));
 
-    async function getMovies() {
+    async function getInvoices() {
 
         await mongoose.connect(uri);
       
         // New version of mongoose does not accept calback functions inside functions, so you have to wrap those inside an async function
-        const result = await Movie.find({}, null, {limit:20})
-   
+        const result = await Invoice.find({}, null, {limit:20})
+
         res.status(200).json(result);
         
       }
 
 });
 
-// Add one more movie – notice POST-variable reading
+// Adds one new invoice
 app.post("/api/add", function(req, res) {
     
-    addMoviee().catch(err => res.status(500).send(err));
+    addInvoice().catch(err => res.status(500).send(err));
 
-    async function addMoviee() {
+    async function addInvoice() {
 
         await mongoose.connect(uri);
 
                 // new object for saving
-                var newMovie = new Movie({
-                    title: req.body.title,
-                    year: req.body.year,
-                    poster: req.body.poster
+                var newInvoice = new Invoice({
+                    invoicenumber: req.body.invoicenumber,
+                    emissiondate: req.body.emissiondate,
+                    amount: req.body.amount
                 });
         
-        var newMovieVal = newMovie.validateSync();
+        // Validates with my schema model
+        var newInvoiceValidation = newInvoice.validateSync();
+
+        console.log(newInvoiceValidation);
       
-        if (newMovieVal == null || newMovieVal == ""){
+        // If validation is empty, it means it went ok. Otherwise, it went wrong.
+        if (newInvoiceValidation == null || newInvoiceValidation == ""){
 
-            newMovie.save();
+           var result = newInvoice.save();
 
-            res.status(200).send('{"message": "Movie added correctly" ,"response:"'+ JSON.stringify(result) + '}');
+            res.status(200).send('{"message": "Invoice added correctly" ,"dbresponse:"'+ JSON.stringify(result) + '}');
 
         } else {
 
-            res.status(500).send(newMovieVal);
+            res.status(500).send(newInvoiceValidation);
 
         }
      
@@ -87,24 +92,25 @@ app.post("/api/add", function(req, res) {
     
     });
 
-    // Return one item with the given id
+    // Return one invoice with the given id
 app.get("/api/:id", function(req, res) {
 
         // pick ID from parameter in URL
         var id = req.params.id;
 
-        getSpecificMovie().catch(err => res.status(500).send(err));
+        getSpecificInvoice().catch(err => res.status(500).send(err));
 
-        async function getSpecificMovie() {
+        async function getSpecificInvoice() {
 
             await mongoose.connect(uri);
             
             // New version of mongoose does not accept calback functions inside functions, so you have to wrap those inside an async function
-            const result = await Movie.findById(id);
+            const result = await Invoice.findById(id);
             
+            // If the query returns empty o null, it means it hasn't found a document
             if (result == null || result == ""){
 
-                res.status(500).send('{"message": "Movie with that ID is not found" ,"response:"'+ JSON.stringify(result) + '}');
+                res.status(500).send('{"message": "Invoice with that ID is not found" ,"dbresponse:"'+ JSON.stringify(result) + '}');
     
             } else {
                 res.status(200).send(result);
@@ -119,36 +125,31 @@ app.put("/api/update/:id", function(req, res) {
         // pick ID from parameter in URL
         var id = req.params.id;
 
-        updateMovie().catch(err => res.status(500).send(err));
+        updateInvoice().catch(err => res.status(500).send(err));
 
-        async function updateMovie() {
+        async function updateInvoice() {
 
             await mongoose.connect(uri);
 
-            // object to validate
-            var validMovie = new Movie({
-                title: req.body.title,
-                year: req.body.year,
-                poster: req.body.poster
-            });
-
-
-    
-                const result = await Movie.updateOne({ _id: id }, req.body, { runValidators: true } );
+                // The update is tried and also the field validations is run
+                const result = await Invoice.updateOne({ _id: id }, req.body, { runValidators: true } );
 
                 console.log(result);
 
+                    // If no document is found with that ID, nothing is updated
                     if (result.matchedCount == 0){
 
-                        res.status(200).send('{"message": "Movie with that ID is not found" ,"response:"'+ JSON.stringify(result) + '}');
+                        res.status(200).send('{"message": "Invoice with that ID is not found" ,"dbresponse:"'+ JSON.stringify(result) + '}');
             
+                    // If a document is found and also the acknowledged == true, which means that everything went OK, we display a JSON with the corresponding messages
                     } else if (result.acknowledged == true) {
                         
-                        res.status(200).send('{"message": "Movie updated correctly" ,"response:"'+ JSON.stringify(result) + '}');
+                        res.status(200).send('{"message": "Invoice updated correctly" ,"dbresponse:"'+ JSON.stringify(result) + '}');
 
                     } else {
 
-                        res.status(200).send(result);
+                    // This is for other posible results if the query didn't go correctly
+                        res.status(500).send(result);
 
                     }
     
@@ -162,28 +163,28 @@ app.delete("/api/delete/:id", function(req, res) {
         // pick ID from parameter in URL
         var id = req.params.id;
 
-        deleteMovie().catch(err => res.status(500).send(err));
+        deleteInvoice().catch(err => res.status(500).send(err));
 
-        async function deleteMovie() {
+        async function deleteInvoice() {
 
             await mongoose.connect(uri);
             
             // New version of mongoose does not accept calback functions inside functions, so you have to wrap those inside an async function
-            const result = await Movie.findByIdAndRemove(id);
+            const result = await Invoice.findByIdAndRemove(id);
 
             if (result == null || result == ""){
 
-                res.status(500).send('{"message": "Movie can\'t be deleted as there is none with that ID" ,"response:"'+ JSON.stringify(result) + '}');
+                res.status(500).send('{"message": "Invoice can\'t be deleted as there is none with that ID" ,"dbresponse:"'+ JSON.stringify(result) + '}');
     
             } else {
-                res.status(200).send('{"message": "Movie deleted correctly" ,"response:"'+ JSON.stringify(result) + '}');
+                res.status(200).send('{"message": "Invoice deleted correctly" ,"dbresponse:"'+ JSON.stringify(result) + '}');
             }
         
         }
 
 });
 
-//The 404 Route (Always kepe this as the last route)
+//The 404 Route (This always has to be the last route)
 app.get('*', function (req, res){
     res.status(404).send('Cant find the requested page');
 });
