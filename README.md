@@ -55,7 +55,7 @@ PUT https://full-stack-ope-fgb-p2.onrender.com/api/update/:id Updates the invoic
 - If ObjectId does not have correct format, the repsonse of the DB will be shown in a json
 - If ObjectId format is correct but does not match a document ID, response json will be {"message": "Invoice with that ID is not found"} and the DB response.
 
-DELETE https://full-stack-ope-fgb-p2.onrender.com/api/delete/:id Deletes the invoice with the given id
+DELETE https://full-stack-ope-fgb-p2.onrender.com/api/delete/:id Deletes the invoice with the given id and if it was successfull, will show you which invoice it deleted.
 
 - If ID is correct, the response will be {"message": "Invoice deleted correctly"} together with the DB response, which will probably be the document removed.
 - If ObjectId does not have correct format, the repsonse of the DB will be shown in a json
