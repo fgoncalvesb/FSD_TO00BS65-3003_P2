@@ -31,10 +31,27 @@ POST https://full-stack-ope-fgb-p2.onrender.com/api/add Creates a new invoice in
 -"reponse" is empty because the DB returns nothing if the invoice was properly created
 -If validation is not passed, JSON with detail will be returned
 
-PUT https://full-stack-ope-fgb-p2.onrender.com/api/update/:id Updates the invoice with the given id
+Restrictions in order to create a new invoice:
+
+    invoicenumber: {
+        type: String,
+        required: true,
+        },
+    emissiondate: {
+        type: Date,
+        min: "2020-01-01",
+        max: "2023-12-31",
+        required: true
+        },
+    amount: {
+        type: Number,
+        required: true,
+        }
+
+PUT https://full-stack-ope-fgb-p2.onrender.com/api/update/:id Updates the invoice with the given id. It tries to update only the part that you put in the json and just for that invoice.
 
 - If ID is correct, the response will be {"message": "Invoice updated correctly"} together with the DB response, which will probably be "dbresponse:"{"acknowledged":true,"modifiedCount":1,"upsertedId":null,"upsertedCount":0,"matchedCount":1}
-- If field to be updated does not pass a field validation, corresponding error with detail of the validation will be shown
+- If field to be updated does not pass a field validation, corresponding error with detail of the validation will be shown (the same validations as when you add an invoice)
 - If ObjectId does not have correct format, the repsonse of the DB will be shown in a json
 - If ObjectId format is correct but does not match a document ID, response json will be {"message": "Invoice with that ID is not found"} and the DB response.
 

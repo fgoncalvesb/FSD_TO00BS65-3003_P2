@@ -139,7 +139,7 @@ app.put("/api/update/:id", function(req, res) {
                     // If no document is found with that ID, nothing is updated
                     if (result.matchedCount == 0){
 
-                        res.status(200).send('{"message": "Invoice with that ID is not found" ,"dbresponse:"'+ JSON.stringify(result) + '}');
+                        res.status(500).send('{"message": "Invoice with that ID is not found" ,"dbresponse:"'+ JSON.stringify(result) + '}');
             
                     // If a document is found and also the acknowledged == true, which means that everything went OK, we display a JSON with the corresponding messages
                     } else if (result.acknowledged == true) {
