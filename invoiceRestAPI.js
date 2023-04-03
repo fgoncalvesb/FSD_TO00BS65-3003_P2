@@ -1,7 +1,11 @@
 
 var express = require("express");
+const cors = require('cors');
+
 var app = express();
 var mongoose = require("mongoose");
+
+app.use(cors());
 
 // This is needed to read the api calls
 var bodyParser = require("body-parser");
