@@ -83,7 +83,7 @@ app.post("/api/add", function(req, res) {
 
            var result = newInvoice.save();
 
-            res.status(200).send('{"message": "Invoice added correctly" ,"dbresponse:"'+ JSON.stringify(result) + '}');
+            res.status(200).send('{"message": "Invoice added correctly" ,"dbresponse":'+ JSON.stringify(result) + '}');
 
         } else {
 
@@ -114,7 +114,7 @@ app.get("/api/:id", function(req, res) {
             // If the query returns empty o null, it means it hasn't found a document
             if (result == null || result == ""){
 
-                res.status(500).send('{"message": "Invoice with that ID is not found" ,"dbresponse:"'+ JSON.stringify(result) + '}');
+                res.status(500).send('{"message": "Invoice with that ID is not found" ,"dbresponse":'+ JSON.stringify(result) + '}');
     
             } else {
                 res.status(200).send(result);
@@ -143,12 +143,12 @@ app.put("/api/update/:id", function(req, res) {
                     // If no document is found with that ID, nothing is updated
                     if (result.matchedCount == 0){
 
-                        res.status(500).send('{"message": "Invoice with that ID is not found" ,"dbresponse:"'+ JSON.stringify(result) + '}');
+                        res.status(500).send('{"message": "Invoice with that ID is not found" ,"dbresponse":'+ JSON.stringify(result) + '}');
             
                     // If a document is found and also the acknowledged == true, which means that everything went OK, we display a JSON with the corresponding messages
                     } else if (result.acknowledged == true) {
                         
-                        res.status(200).send('{"message": "Invoice updated correctly" ,"dbresponse:"'+ JSON.stringify(result) + '}');
+                        res.status(200).send('{"message": "Invoice updated correctly" ,"dbresponse":'+ JSON.stringify(result) + '}');
 
                     } else {
 
@@ -178,10 +178,10 @@ app.delete("/api/delete/:id", function(req, res) {
 
             if (result == null || result == ""){
 
-                res.status(500).send('{"message": "Invoice can\'t be deleted as there is none with that ID" ,"dbresponse:"'+ JSON.stringify(result) + '}');
+                res.status(500).send('{"message": "Invoice can\'t be deleted as there is none with that ID" ,"dbresponse":'+ JSON.stringify(result) + '}');
     
             } else {
-                res.status(200).send('{"message": "Invoice deleted correctly" ,"dbresponse:"'+ JSON.stringify(result) + '}');
+                res.status(200).send('{"message": "Invoice deleted correctly" ,"dbresponse":'+ JSON.stringify(result) + '}');
             }
         
         }
