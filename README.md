@@ -15,6 +15,8 @@ By Facundo Goncalves Borrega
 
 It's a REST API that let's you create invoices, delete them, update them, query in order to get at least 20 of them without a filter and to get one specific invoice by ID.
 
+Important: maybe the first time you call the API, you will have to wait some minutes for the API to wake "up", as I used free Render account. After that first time, the response is quicker.
+
 GET https://full-stack-ope-fgb-p2.onrender.com/api/getall Returns all invoices in collection - Returnos all (max 20) documents in the collcetion, in an array.
 
 - If collection is empty, it will return an empty json
